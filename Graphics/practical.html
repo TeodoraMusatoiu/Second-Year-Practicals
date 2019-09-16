@@ -1,0 +1,97 @@
+
+<html>
+	<head>
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+		<script src="js/OrbitControls.js"></script>
+		<script src="js/dat.gui.min.js"></script> <!-- a GUI framework for js -->
+		<script src='js/threex.keyboardstate.js'></script>
+		<script src="js/Detector.js"></script> <!-- detects which opengl version is running -->
+		<script>
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			var controls = new THREE.OrbitControls(camera,renderer.domElement);
+
+
+			var geometry = new THREE.CubeGeometry( 1, 1, 1 );
+			var edges = new THREE.EdgesGeometry( geometry );
+			var line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0x000000 } ) );
+			
+			
+			var materials =[
+				new THREE.MeshLambertMaterial( {color: 0xff0000, side:THREE.DoubleSide} ), //RIGHT
+				new THREE.MeshLambertMaterial( {color: 0x186030, side:THREE.DoubleSide} ), //LEFT
+				new THREE.MeshLambertMaterial( {color: 0xc6b5b0, side: THREE.DoubleSide}),  //BACK
+				new THREE.MeshLambertMaterial( {color: 0xc6b5b0,  side:THREE.DoubleSide}),  //FRONT
+				new THREE.MeshLambertMaterial( {color: 0xc6b5b0, side:THREE.DoubleSide}), //TOP
+				new THREE.MeshLambertMaterial( {color: 0xc6b5b0, side:THREE.DoubleSide})  //BOTTOM
+			];
+			var faceMaterial = new THREE.MeshFaceMaterial (materials);
+			var cube = new THREE.Mesh( geometry, faceMaterial);
+			scene.add( cube );
+			scene.add( line);
+
+			var geometry2 = new THREE.CubeGeometry(0.1,0.1, 0.1);            
+            var materials2 =[
+				new THREE.MeshLambertMaterial( {color: 0x660066, side:THREE.DoubleSide, opacity:0.2}),  //RIGHT
+				new THREE.MeshLambertMaterial( {color: 0x330033, side:THREE.DoubleSide, opacity:0.2}), //LEFT
+				new THREE.MeshLambertMaterial( {color: 0xff00ff, side:THREE.DoubleSide, opacity:0.2}), //BACK
+				new THREE.MeshLambertMaterial( {color: 0x660066, side:THREE.DoubleSide, opacity:0.2}),  //FRONT
+				new THREE.MeshLambertMaterial( {color: 0x660066, side:THREE.DoubleSide, opacity:0.2}), //TOP
+				new THREE.MeshLambertMaterial( {color: 0x330033, side:THREE.DoubleSide, opacity:0.2})  //BOTTOM
+			];
+			var faceMaterial2 = new THREE.MeshFaceMaterial (materials2);
+            var cube2 = new THREE.Mesh( geometry2, faceMaterial2 );
+            scene.add(cube2);
+
+			light = new THREE.DirectionalLight(0xffff99, 1.1);
+			light.position.set(0.5, 1.5, 0.3);
+			scene.add(light);
+
+			var light1 = new THREE.PointLight( 0xffff99, 1, 100 );
+			light1.position.set( 0, 7, 1 );
+			scene.add( light1 );
+
+			scene.add( new THREE.AmbientLight( 0x505050 ) );
+
+			var geometry3 = new THREE.SphereGeometry( 0.08, 32, 32 );
+			var material3 = new THREE.MeshLambertMaterial( {color: 0x660066, skinning: true} );
+			var sphere = new THREE.Mesh( geometry3, material3 );
+			scene.add( sphere );
+
+			camera.position.z = 0.55;
+			camera.position.y = -0.07;		
+			cube2.position.x =0.15;
+			cube2.position.y = -0.3;
+			sphere.position.x = -0.15;
+			sphere.position.y = -0.3;
+			
+
+			function animate() {
+				requestAnimationFrame( animate );
+				
+				cube2.rotation.x += 0.01;
+				cube2.rotation.y += 0.01;
+				cube2.rotation.z += 0.01;
+				sphere.rotation.x += 0.01;
+				sphere.rotation.y += 0.01;
+
+				renderer.render( scene, camera );
+			}				
+			animate();
+			
+
+		</script>
+	</body>
+</html>

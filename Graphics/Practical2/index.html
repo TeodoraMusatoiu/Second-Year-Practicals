@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+		    <title>Practical2 - Load 3D geometry</title>
+		<link type="text/css" href="webgl-tutorials.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="description">
+		Load external 3D models from OBJ or JSON files.
+		</div>
+		<canvas id="canvas"></canvas>
+	</body>
+	<script src="webgl-utils.js"></script>
+	<script src="m4.js"></script>
+	<script src="m3.js"></script>
+	<script src="ObjLoader.js"></script>
+	<script src="jquery-3.3.1.js"></script>
+	<script type="text/javascript" src="main.js"></script>
+	<script type="text/javascript">
+		var vertexShaderFilename = 'vertexShader.glsl';
+		var fragmentShaderFilename = 'fragmentShader.glsl';
+		var cubefile = 'cube.obj';
+		fetch(vertexShaderFilename)
+		.then(response => response.text())
+		.then(vs => 
+		{
+			fetch(fragmentShaderFilename)
+			.then(response => response.text())
+			.then(fs => 
+			{
+				fetch(cubefile)
+				.then(response => response.text())
+				.then (cubestr =>
+				{ 
+					main(vs,fs,cubestr);
+				}
+				)		
+			}
+			)
+		}
+		);
+	</script>
+</html>
