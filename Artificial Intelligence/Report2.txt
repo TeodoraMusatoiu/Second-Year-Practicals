@@ -1,0 +1,33 @@
+There are two types of searches implemented in this practical:A* search using tree search and graph search.
+The difference between the two is that graph search keeps track of the nodes that have been visited before.
+
+Results for the 8-puzzle Searches:
+
+A* Tree Search
+Generated number of nodes: 964
+Maximum number of nodes in the frontier: 613
+
+A* Graph Search:
+Generated number of nodes: 189
+Maximum number of nodes in the frontier: 82
+
+Results for the tour of Romania :
+
+Small Map of Romania:
+
+A* Tree Search:
+Generated number of nodes: 241
+Maximum number of nodes in the frontier: 146
+
+A* Graph Search:
+Generated number of nodes: 144
+Maximum number of nodes in the frontier: 74
+
+Big Map of Romania:
+
+A* Tree Search does not terminate
+A* Graph Search:
+Generated number of nodes: 23509
+Maximum number of nodes in the frontier: 7248
+
+The values are smaller than the ones obtained in Practical 1 because A* search avoids expanding the paths which are already expensive. It uses an evaluation fnction which computes how close to the goal the respective node is. This makes A* an informed searh strategy, so it will get to the goal quicker than an uninformed one.

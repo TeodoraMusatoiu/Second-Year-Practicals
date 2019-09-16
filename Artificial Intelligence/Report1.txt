@@ -1,0 +1,48 @@
+There are two types of searches implemented in this practical: tree search and graph search.
+The difference between the two is that graph search keeps track of the nodes that have been
+visited before.
+
+Results for the 8-puzzle Searches:
+
+BFTS
+Generated number of nodes: 2298274
+Maximum number of nodes in the frontier: 1473871
+
+DFTS
+Does not terminate because this may explore nodes which have already been explored.
+This will cause the search to loop and never terminate.
+
+BFGS
+Generated number of nodes: 4359
+Maximum number of nodes in the frontier: 1592
+
+DFGS
+Generated number of nodes: 34266
+Maximum number of nodes in the frontier: 14480
+
+IDTS
+Generated number of nodes: 1211854
+Maximum number of nodes in the frontier: 25
+
+
+Results for the tour of Romania:
+
+BFTS
+Generated number of nodes: 75973
+Maximum number of nodes in the frontier: 44217
+
+DFTS
+Does not terminate because this may explore nodes which have already been explored.
+This will cause the search to loop and never terminate.
+
+BFGS
+Generated number of nodes: 946
+Maximum number of nodes in the frontier: 186
+
+DFGS
+Generated number of nodes: 61
+Maximum number of nodes in the frontier: 19
+
+IDTS
+Generated number of nodes: 41636
+Maximum number of nodes in the frontier: 22
