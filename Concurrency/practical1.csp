@@ -1,0 +1,119 @@
+-- Defines T as the set {1 ,2 ,3 ,4 ,5}
+T = {1..5}
+
+-- Declares the events input .1 , output .1 , input .2 etc .
+
+channel input , output : T
+
+Proc1 = input ?x -> output .x -> Proc1
+
+Proc2 = input ?x -> Proc2' ({ x })
+
+Proc2' (X) =
+	output ? a:X -> Proc2' ( diff (X ,{ a }))
+	[] input ? b -> Proc2' ( union (X ,{ b }))
+
+{- 
+	2. The difference between Proc1 and Proc2 is that proc one uses self recursion,
+whereas Proc2 calls another helper procedure to solve the same task. Proc 2 can also have the 
+sequence input , input. 
+
+-}
+
+{-
+	3. Proc2 does not refine Proc1 as the trace= <input?x , input?y> of Proc2 is not
+a trace for Proc1 as well.
+	However, Proc1 refines Proc 2 as the trace for Proc1 will only have sequences of input and output
+events, all alternating. These are all valid traces for Proc2 as well.
+-}
+
+assert Proc1 [T= Proc2
+assert Proc2 [T= Proc1
+
+{-
+	4. The first assertion fails, so Proc2 does not refine Proc1. However, the seconf one passes.
+-}
+
+
+Proc3 = input?x -> Proc3' ({x})
+
+Proc3' (X) = 
+	output ? a: X -> Proc3'(diff(X,{a}))
+	[] input? b -> (member(b, X) == false) & Proc3' (union (X, {b}))
+
+-- Assertion fails
+assert Proc1 [T= Proc3	
+
+--Assertion passes
+assert Proc3 [T= Proc1
+
+--Assertion passes
+assert Proc2 [T= Proc3
+
+--Assertion fails
+assert Proc3 [T= Proc2
+
+{-
+Part 2
+
+1. The horse cannot perform the events forward and backward because the 2 events need to synchronise over the intersection of the sets F and B => both Front and Back need to perform forward or backward at the same time. 
+The events neigh and kick will never be performed as they are performed after a forward/backward event.
+-}
+
+channel forward, backward, kick, nod, wag, neigh
+F = {forward, backward,nod, neigh}
+B = {forward, backward, wag, kick}
+
+Front = 
+	forward -> neigh -> Front
+	[] nod -> Front
+
+Back =
+	backward -> kick -> Back
+	[] wag -> Back
+
+Horse = Front [F||B] Back
+
+RUN (X) = [] ev:X @ ev -> RUN (X)
+
+--Assertion passes => Horse refines RUN({nod, wag})
+assert RUN({nod, wag}) [T= Horse
+
+Front1 = neigh -> forward -> backward -> Front1 
+Back1 = forward -> kick -> backward -> Back1
+
+Horse1 = Front1 [F||B] Back1
+
+PH1 = neigh -> forward -> kick -> backward -> PH1
+
+--Both assertions pass, the processes are equivalent.
+assert PH1 [T= Horse1
+assert Horse1 [T= PH1
+
+Front2 = forward -> neigh -> Front2 [] backward -> Front2
+Back2 = backward -> kick -> Back2 []forward -> Back2
+
+Horse2 = Front2 [F||B] Back2
+
+PH2 = 
+	forward -> neigh -> PH2
+	[] backward -> kick -> PH2
+
+--Both assertions pass, the processes are equivalent.
+assert PH2 [T= Horse2
+assert Horse2 [T= PH2
+
+Front3 = neigh -> forward -> Front3
+Back3 = wag -> forward -> Back3
+
+Horse3 = Front3 [F||B] Back3
+
+PH3 = 
+	neigh -> wag -> forward -> PH3
+	[] wag -> neigh -> forward -> PH3
+
+
+--Both assertions pass, the processes are equivalent.
+assert PH3 [T= Horse3
+assert Horse3 [T= PH3
+

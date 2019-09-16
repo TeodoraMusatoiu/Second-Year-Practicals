@@ -1,0 +1,61 @@
+datatype T = A | B | C | D | E
+
+-- endToShed t i j means that train t moves from end of line i to shed j 
+-- shedToEnd t i j means that train t moves from shed i to end of line j
+
+channel endToShed, shedToEnd : T.T.T
+channel done
+
+-- Each line can either be empty or full 
+Line (l) = shedToEnd?t:T?x:T!l  -> FullLine (t,l) [] done -> Line(l)
+FullLine(t,l) = endToShed!t!l?s:T -> Line(l) 
+
+
+-- Each shed can either be empty or full
+-- We are finished when the right train is in the right shed
+Shed (s) = endToShed?t:T?x:T!s -> FullShed(t,s)
+FullShed(t,s) = ( (t==s) & done -> FullShed(t,s) ) [] shedToEnd!t!s?l:T -> Shed(s)
+
+-- Initial state
+f(A) = E
+f(B) = D
+f(C) = C
+f(D) = B
+f(E) = A
+
+-- Possible events for Lines and Sheds 
+EventLine(l) = union({|shedToEnd.t.s.l, done | t <- T, s <- T|}, {|endToShed.t.l.s | t <- T, s <- T|})
+EventShed(s) = union({|shedToEnd.t.s.l, done| t <- T, l <- T|}, {|endToShed.t.l.s | t <- T, l <- T|})
+
+Events = {| shedToEnd, endToShed, done |}
+
+System = (|| t : T @ [EventLine(t)] FullLine(f(t), t)) [| Events |] (|| t : T @ [EventShed(t)] Shed(t))
+
+-- Restrictions on the lines as shown in the diagram 
+Restrictions = shedToEnd?t!A!A -> Restrictions [] endToShed?t!A!A -> Restrictions []
+	shedToEnd?t!B!B -> Restrictions [] endToShed?t!B!B -> Restrictions []
+	shedToEnd?t!C!C -> Restrictions [] endToShed?t!C!C -> Restrictions []
+	shedToEnd?t!D!D -> Restrictions [] endToShed?t!D!D -> Restrictions []
+	shedToEnd?t!E!E -> Restrictions [] endToShed?t!E!E -> Restrictions []
+	shedToEnd?t!A!A -> Restrictions [] endToShed?t!A!A -> Restrictions []
+	shedToEnd?t!A!C -> Restrictions [] endToShed?t!C!A -> Restrictions []
+	shedToEnd?t!B!A -> Restrictions [] endToShed?t!A!B -> Restrictions []
+	shedToEnd?t!B!D -> Restrictions [] endToShed?t!D!B -> Restrictions []
+	shedToEnd?t!C!A -> Restrictions [] endToShed?t!A!C -> Restrictions []
+	shedToEnd?t!E!B -> Restrictions [] endToShed?t!B!E -> Restrictions [] done -> Restrictions
+
+-- Final System 
+RestrictedSystem = System [|Events|] Restrictions
+
+--Both assertions Fail. 
+--The Systems find the correct solutions. 
+
+assert RUN({| shedToEnd, endToShed |}) [T= System
+-- endToShed.D.B.D, endToShed.C.C.C, endToShed.A.E.A, endToShed.B.D.B, endToShed.E.A.E
+
+assert RUN({| shedToEnd, endToShed |}) [T= RestrictedSystem
+-- endToShed.B.D.B, endToShed.E.A.C, shedToEnd.B.B.A, endToShed.D.B.B, shedToEnd.D.B.D, endToShed.D.D.D, 
+-- endToShed.B.A.B, endToShed.A.E.E, shedToEnd.B.B.D, shedToEnd.A.E.B, endToShed.A.B.B, shedToEnd.A.B.A, 
+-- endToShed.A.A.A, shedToEnd.E.C.A, endToShed.E.A.B, shedToEnd.E.B.B, endToShed.C.C.C, endToShed.E.B.E, endToShed.B.D.B
+
+
